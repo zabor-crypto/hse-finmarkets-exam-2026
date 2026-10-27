@@ -1,22 +1,39 @@
-# HSE Financial Markets — Exam Trainer 2026
+# HSE Financial Markets — Exam Trainer 2.0
 
-Standalone static exam trainer: 200 author-created practice questions across 4 blocks of 50.
-No backend, external APIs, analytics, tracking or third-party scripts.
-The entire question bank is inlined in `index.html`; browser localStorage stores learner progress.
+350 авторских учебных заданий по финансовым рынкам и институтам: семь вариантов по 50, в каждом 25 multiple choice и 25 открытых. Это учебный помощник, а не официальная экзаменационная платформа ВШЭ.
 
-## Public website
-GitHub Pages from `main` branch, `/(root)`. `index.html` is the entry point.
-Download the complete project source archive at `downloads/HSE_FinMarkets_Exam_Trainer_200.zip`.
+Сайт: https://zabor-crypto.github.io/hse-finmarkets-exam-2026/
 
-## Privacy
-The website contains the generated educational question bank, **not** the original lecture PDFs, exam spreadsheet, or any student private data.
-Answers are stored only in the current browser; exporting progress produces a local JSON download.
+Полный проект: [V2 — 350 вопросов](downloads/HSE_FinMarkets_Exam_Trainer_350.zip). Исторический архив [V1 — 200 вопросов](downloads/HSE_FinMarkets_Exam_Trainer_200.zip) сохранён без изменений.
 
-## QA checklist
-- 4 blocks; 50 questions per block, 25 multiple-choice and 25 open responses.
-- Verify MC scoring requires exactly the whole correct set; reveal feedback after each submission.
-- Open responses are evaluated heuristically, with learner self-assessment override.
-- Verify progress reload, export, restart a single block, and ZIP download.
-- Verify https://OWNER.github.io/hse-finmarkets-exam-2026/ and https://OWNER.github.io/hse-finmarkets-exam-2026/downloads/HSE_FinMarkets_Exam_Trainer_200.zip return HTTP 200.
+## Как проходить
 
-Use as a study aid; not an official HSE exam platform.
+Выберите вариант и переходите по номерам. Неотвеченное задание можно пропустить без оценки; черновик сохраняется. После отправки видны эталон и объяснение. MC получает балл только за полный верный набор. Предварительная оценка открытого ответа использует маркеры и допускает самооценку. Итоговый балл и завершение доступны после всех 50 ответов. Общая аналитика показывает только прогресс незавершённых вариантов.
+
+## Прогресс и приватность
+
+Данные остаются в localStorage браузера; аналитики и серверной отправки нет. Экспорт скачивает локальный JSON со schemaVersion 2 и историей. При первой загрузке V2 старый ключ `hse.finmarkets.200.v1` сохраняется, а состояние переносится в `hse.finmarkets.350.v2`. Повторная загрузка не повторяет миграцию.
+
+По отдельному разрешению владельца заменены три смысловых повтора Q043, Q151, Q181. Их прежние ответы, оценки и формулировки доступны в «Истории V1» и экспорте; на новые вопросы они не засчитываются. Остальные 197 старых заданий сохраняют совместимость, включая порядок вариантов MC и пользовательские самооценки. При нехватке места или повреждённых данных отображается предупреждение, старые байты не удаляются.
+
+## Источники и проверка
+
+- [Матрица покрытия](docs/coverage_audit_v2.md)
+- [Содержательная проверка и исправления слайдов](docs/content_quality_review_v2.md)
+- [Сравнение версий](docs/comparison_v1_v2.md)
+
+В публичном проекте нет исходных преподавательских PDF, Excel-банка и результатов студентов. Ссылки на страницы источников относятся к физической нумерации PDF. Правовые ссылки сопровождаются датой проверки.
+
+## Сборка
+
+Источник банка — `questions.json`, интерфейса — `template.html`, `styles.css`, `app.js`. Не редактируйте встроенный JSON вручную.
+
+```sh
+python3 build_trainer.py
+python3 build_trainer.py --check
+python3 -m unittest discover -s tests -v
+```
+
+Сборка создаёт автономный `index.html` и воспроизводимый ZIP с исходниками. ZIP не содержит преподавательских материалов. Для локального браузерного теста запустите `python3 -m http.server 8766`, установите Playwright в отдельном scratch-каталоге и запустите `tests/browser.cjs` с URL и внешним каталогом evidence. Нужен Chromium/Chrome; путь можно задать через `CHROMIUM_PATH`, модуль Playwright — через `NODE_PATH`. Полный проход использует только синтетические ответы в изолированных профилях.
+
+GitHub Pages публикует корень `main`; `.nojekyll` сохранён. Перед выпуском нужны независимые содержательная и миграционная проверки, автоматические проверки, Chromium 390/1440 и повторный проход на публичном сайте.
